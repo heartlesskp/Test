@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "523701076864",
+    "firebase_url": "https://signin-5432a.firebaseio.com",
+    "project_id": "signin-5432a",
+    "storage_bucket": "signin-5432a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523701076864:android:fe79389d213a8dda1ef765",
+        "android_client_info": {
+          "package_name": "com.expertbrains.startegictest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523701076864-ehju9fc551snh3vtfffmnrkjftln9vv3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLANgADHvSLyzT7F2V9wIewLIQroOtjoE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523701076864-ehju9fc551snh3vtfffmnrkjftln9vv3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

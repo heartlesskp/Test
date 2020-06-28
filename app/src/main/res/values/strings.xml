@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Startegic Test</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="label_continue">Continue</string>
+    <string name="persons">Persons</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="designation">Designation</string>
+    <string name="organization">Organization</string>
+    <string name="pick_location_from_map">Pick Location from map</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="setting">Setting</string>
+    <string name="permission_msg">You need to manual enable the all permission to access the application</string>
+    <string name="permission_title">Permission denied permanently</string>
+    <string name="network_connection">Network Connection</string>
+    <string name="internet_connection">Internet Connection not Available</string>
+    <string name="ok">OK</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="new_profile_photo">New Profile Photo</string>
+    <string name="remove_profile_photo">Remove Profile Photo</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="select_country">Select Country</string>
+</resources>
