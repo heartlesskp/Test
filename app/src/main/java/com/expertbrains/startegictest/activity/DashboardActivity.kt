@@ -105,7 +105,14 @@ class DashboardActivity : BaseActivity() {
                     .putExtra(Constant.USER_ITEM, item)
             )
         }
-
-
+        btnViewLocation.setOnClickListener {
+            if (item.lat != 0.0 && item.lng != 0.0) {
+                startActivity(
+                    Intent(this, MapActivity::class.java)
+                        .putExtra(Constant.IS_SHOW_LOCATION, true)
+                        .putExtra(Constant.USER_ITEM, item)
+                )
+            } else makeToast("User geo coordinates not available")
+        }
     }
 }

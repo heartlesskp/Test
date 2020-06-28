@@ -40,5 +40,11 @@ class TestTable : Serializable {
     @ColumnInfo(name = "city")
     var city = ""
 
+    @ColumnInfo(name = "lat")
+    var lat = 0.0
+
+    @ColumnInfo(name = "lng")
+    var lng = 0.0
+
 
 }

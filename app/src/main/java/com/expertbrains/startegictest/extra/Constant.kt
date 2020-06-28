@@ -7,5 +7,6 @@ class Constant {
         const val REQUEST_CODE = 1011
         const val LAT = "lat"
         const val LNG = "lng"
+        const val IS_SHOW_LOCATION = "isShowLocation"
     }
 }

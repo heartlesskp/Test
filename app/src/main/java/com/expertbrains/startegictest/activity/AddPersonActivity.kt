@@ -41,6 +41,8 @@ import kotlin.Comparator
 
 class AddPersonActivity : BaseActivity() {
 
+    private var lat: Double = 0.0
+    private var lng: Double = 0.0
     private lateinit var item: TestTable
     private lateinit var alPersonName: ArrayList<TestTable>
     private lateinit var personAdapter: PersonDropDownAdapter
@@ -65,6 +67,8 @@ class AddPersonActivity : BaseActivity() {
         displayHomeButton(true)
 
         isEdit = intent.getBooleanExtra(Constant.IS_EDIT, false)
+        toolbarTitle =
+            if (isEdit) getString(R.string.edit_person) else getString(R.string.add_person)
 
         if (isEdit) {
             item = intent.getSerializableExtra(Constant.USER_ITEM) as TestTable
@@ -80,7 +84,7 @@ class AddPersonActivity : BaseActivity() {
         btnSave.setOnClickListener {
             if (checkValidation()) {
                 saveDataInDatabase()
-            } else makeToast("fail")
+            } else makeToast("Please fill detail")
         }
         btnPickLocation.setOnClickListener {
             startActivityForResult(Intent(this, MapActivity::class.java), Constant.REQUEST_CODE)
@@ -98,6 +102,8 @@ class AddPersonActivity : BaseActivity() {
         etCity.setText(item.city)
         tvDateOfBirth.text = item.dateOfBirth
         tvCountry.text = item.country
+        lat = item.lat
+        lng = item.lng
         encodedString = item.profileUrl
         ivProfile.setImageBitmap(Utility.getDecodeStringBitmap(item.profileUrl))
         Observable.fromCallable {
@@ -124,6 +130,8 @@ class AddPersonActivity : BaseActivity() {
         table.state = etState.text.toString()
         table.city = etCity.text.toString()
         table.profileUrl = encodedString
+        table.lat = lat
+        table.lng = lng
         Observable.fromCallable {
             if (isEdit) database.getTestTableDao().updateUserData(
                 table.firstName,
@@ -135,6 +143,8 @@ class AddPersonActivity : BaseActivity() {
                 table.state,
                 table.city,
                 table.profileUrl,
+                table.lat,
+                table.lng,
                 item.id
             )
             else database.getTestTableDao().insertAccountData(table)
@@ -302,8 +312,8 @@ class AddPersonActivity : BaseActivity() {
                     }
                 }
                 Constant.REQUEST_CODE -> {
-                    val lat = data.getDoubleExtra(Constant.LAT, 0.0)
-                    val lng = data.getDoubleExtra(Constant.LNG, 0.0)
+                    lat = data.getDoubleExtra(Constant.LAT, 0.0)
+                    lng = data.getDoubleExtra(Constant.LNG, 0.0)
                     val geoCoder = Geocoder(this, Locale.getDefault())
                     val addresses: List<Address>?
                     try {

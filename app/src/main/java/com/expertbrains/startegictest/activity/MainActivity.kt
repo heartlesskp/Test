@@ -2,6 +2,7 @@ package com.expertbrains.startegictest.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.expertbrains.startegictest.R
 import com.expertbrains.startegictest.base.BaseActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -37,7 +38,7 @@ class MainActivity : BaseActivity() {
         btnContinue.setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
-
+        btnSignOut.visibility = View.GONE
         btnSignOut.setOnClickListener { signOut() }
     }
 

@@ -31,4 +31,6 @@
     <string name="delete">Delete</string>
     <string name="pick_location">Pick location</string>
     <string name="pick">Pick</string>
+    <string name="add_person">Add Person</string>
+    <string name="edit_person">Edit Person</string>
 </resources>
