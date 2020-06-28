@@ -6,6 +6,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
@@ -79,6 +81,9 @@ class AddPersonActivity : BaseActivity() {
             if (checkValidation()) {
                 saveDataInDatabase()
             } else makeToast("fail")
+        }
+        btnPickLocation.setOnClickListener {
+            startActivityForResult(Intent(this, MapActivity::class.java), Constant.REQUEST_CODE)
         }
 
     }
@@ -296,6 +301,22 @@ class AddPersonActivity : BaseActivity() {
                         e.printStackTrace()
                     }
                 }
+                Constant.REQUEST_CODE -> {
+                    val lat = data.getDoubleExtra(Constant.LAT, 0.0)
+                    val lng = data.getDoubleExtra(Constant.LNG, 0.0)
+                    val geoCoder = Geocoder(this, Locale.getDefault())
+                    val addresses: List<Address>?
+                    try {
+                        addresses = geoCoder.getFromLocation(lat, lng, 1)
+                        if (addresses != null && !addresses.isEmpty()) {
+                            tvCountry.text = addresses[0].countryName
+                            etCity.setText(addresses[0].locality)
+                            etState.setText(addresses[0].adminArea)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
         }
     }
@@ -360,7 +381,8 @@ class AddPersonActivity : BaseActivity() {
 
                 personAdapter.addData(alPersonName)
                 personAdapter.onItemClick = {
-                    tvCountry.text = it.firstName
+                    item = it
+                    setEditUserData(it)
                     personPopupWindow?.dismiss()
                 }
                 contentView = rvListView

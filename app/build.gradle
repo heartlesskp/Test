@@ -62,4 +62,8 @@ dependencies {
     //region dexter
     implementation 'com.karumi:dexter:6.2.0'
     //endregion
+
+    //region Map
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    //endregion
 }

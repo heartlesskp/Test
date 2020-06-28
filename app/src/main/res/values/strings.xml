@@ -29,4 +29,6 @@
     <string name="view_location_on_map">View Location on map</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="pick_location">Pick location</string>
+    <string name="pick">Pick</string>
 </resources>
