@@ -39,6 +39,7 @@ import kotlin.Comparator
 
 class AddPersonActivity : BaseActivity() {
 
+    private lateinit var item: TestTable
     private lateinit var alPersonName: ArrayList<TestTable>
     private lateinit var personAdapter: PersonDropDownAdapter
     private var isEdit: Boolean = false
@@ -64,7 +65,7 @@ class AddPersonActivity : BaseActivity() {
         isEdit = intent.getBooleanExtra(Constant.IS_EDIT, false)
 
         if (isEdit) {
-            val item = intent.getSerializableExtra(Constant.USER_ITEM) as TestTable
+            item = intent.getSerializableExtra(Constant.USER_ITEM) as TestTable
             setEditUserData(item)
         }
 
@@ -119,11 +120,23 @@ class AddPersonActivity : BaseActivity() {
         table.city = etCity.text.toString()
         table.profileUrl = encodedString
         Observable.fromCallable {
-            if (isEdit) database.getTestTableDao().updateUserData(table)
+            if (isEdit) database.getTestTableDao().updateUserData(
+                table.firstName,
+                table.lastName,
+                table.organization,
+                table.designation,
+                table.dateOfBirth,
+                table.country,
+                table.state,
+                table.city,
+                table.profileUrl,
+                item.id
+            )
             else database.getTestTableDao().insertAccountData(table)
         }
             .subscribeOn(Schedulers.io()).subscribe(object : BaseRoomObserver<Any>() {
                 override fun onSuccess(response: Any) {
+
                     finish()
                 }
 

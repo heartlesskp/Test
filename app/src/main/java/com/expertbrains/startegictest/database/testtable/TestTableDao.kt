@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
 
 @Dao
 interface TestTableDao {
@@ -23,6 +22,10 @@ interface TestTableDao {
     @Query("SELECT *  FROM test_table")
     fun getAllEditUser(): List<TestTable>
 
-    @Update
-    fun updateUserData(testTable: TestTable): Int
+    @Query("UPDATE test_table SET first_name = :firstName, last_name = :lastName, organization= :organization, designation=:designation, date_of_birth= :dateOfBirth, profile_url=:profileUrl, country=:country, state=:state, city=:city WHERE id=:id")
+    fun updateUserData(
+        firstName: String, lastName: String, organization: String,
+        designation: String, dateOfBirth: String, country: String, state: String, city: String,
+        profileUrl: String, id: Int
+    ): Int
 }
