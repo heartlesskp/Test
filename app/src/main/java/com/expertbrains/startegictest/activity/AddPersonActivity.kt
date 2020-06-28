@@ -17,8 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expertbrains.startegictest.R
 import com.expertbrains.startegictest.adapter.CountryDropDownAdapter
+import com.expertbrains.startegictest.adapter.PersonDropDownAdapter
 import com.expertbrains.startegictest.base.BaseActivity
+import com.expertbrains.startegictest.base.BaseRoomObserver
+import com.expertbrains.startegictest.database.testtable.TestTable
 import com.expertbrains.startegictest.extra.Constant
+import com.expertbrains.startegictest.widgets.CountryRepository
 import com.expertbrains.startegictest.widgets.CustomDialog
 import com.expertbrains.startegictest.widgets.Utility
 import com.karumi.dexter.Dexter
@@ -26,14 +30,21 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_person.*
 import java.util.*
+import kotlin.Comparator
 
 
 class AddPersonActivity : BaseActivity() {
 
+    private lateinit var alPersonName: ArrayList<TestTable>
+    private lateinit var personAdapter: PersonDropDownAdapter
     private var isEdit: Boolean = false
-    private var popupWindow: PopupWindow? = null
+    private var countryPopupWindow: PopupWindow? = null
+    private var personPopupWindow: PopupWindow? = null
+    private var encodedString: String = ""
 
     companion object {
         const val selectImageCode = 1110
@@ -52,22 +63,116 @@ class AddPersonActivity : BaseActivity() {
 
         isEdit = intent.getBooleanExtra(Constant.IS_EDIT, false)
 
+        if (isEdit) {
+            val item = intent.getSerializableExtra(Constant.USER_ITEM) as TestTable
+            setEditUserData(item)
+        }
+
+        tvPersonList.visibility = if (isEdit) View.VISIBLE else View.GONE
         ivProfile.setOnClickListener { checkPermission() }
         tvDateOfBirth.setOnClickListener { openDatePickerDialog() }
         btnCancel.setOnClickListener { finish() }
-        tvCountry.setOnClickListener {
-            popupWindow?.dismiss()
-            if (popupWindow == null)
-                provideCountryPopupWindow(it)
-            popupWindow!!.showAsDropDown(it, 0, -it.height)
+        tvCountry.setOnClickListener { showCountryDialog(it) }
+        tvPersonList.setOnClickListener { showPersonListDialog(it) }
+        btnSave.setOnClickListener {
+            if (checkValidation()) {
+                saveDataInDatabase()
+            } else makeToast("fail")
         }
-        tvPersonList.setOnClickListener {
-            popupWindow?.dismiss()
-            if (popupWindow == null)
-                provideCountryPopupWindow(it)
-            popupWindow!!.showAsDropDown(it, 0, -it.height)
+
+    }
+
+    private fun setEditUserData(item: TestTable) {
+        tvPersonList.text = item.firstName
+        etFirstName.setText(item.firstName)
+        etLastName.setText(item.lastName)
+        etOrganization.setText(item.organization)
+        etDesignation.setText(item.designation)
+        etState.setText(item.state)
+        etCity.setText(item.city)
+        tvDateOfBirth.text = item.dateOfBirth
+        tvCountry.text = item.country
+        encodedString = item.profileUrl
+        ivProfile.setImageBitmap(Utility.getDecodeStringBitmap(item.profileUrl))
+        Observable.fromCallable {
+            database.getTestTableDao().getAllEditUser()
+        }.subscribeOn(Schedulers.io()).subscribe(object : BaseRoomObserver<List<TestTable>>() {
+            override fun onSuccess(response: List<TestTable>) {
+                alPersonName = ArrayList(response.size)
+                alPersonName.addAll(response)
+            }
+
+            override fun onFail(errorMessage: Throwable) {
+            }
+        })
+    }
+
+    private fun saveDataInDatabase() {
+        val table = TestTable()
+        table.firstName = etFirstName.text.toString()
+        table.lastName = etLastName.text.toString()
+        table.organization = etOrganization.text.toString()
+        table.designation = etDesignation.text.toString()
+        table.dateOfBirth = tvDateOfBirth.text.toString()
+        table.country = tvCountry.text.toString()
+        table.state = etState.text.toString()
+        table.city = etCity.text.toString()
+        table.profileUrl = encodedString
+        Observable.fromCallable {
+            if (isEdit) database.getTestTableDao().updateUserData(table)
+            else database.getTestTableDao().insertAccountData(table)
         }
-        tvPersonList.visibility = if (isEdit) View.VISIBLE else View.GONE
+            .subscribeOn(Schedulers.io()).subscribe(object : BaseRoomObserver<Any>() {
+                override fun onSuccess(response: Any) {
+                    finish()
+                }
+
+                override fun onFail(errorMessage: Throwable) {}
+            })
+    }
+
+    private fun checkValidation(): Boolean {
+        var isValid = true
+        if (etFirstName.text.isNullOrEmpty())
+            isValid = false
+        if (etLastName.text.isNullOrEmpty())
+            isValid = false
+        if (etOrganization.text.isNullOrEmpty())
+            isValid = false
+        if (etDesignation.text.isNullOrEmpty())
+            isValid = false
+        if (tvDateOfBirth.text.isNullOrEmpty()
+            || tvDateOfBirth.text.toString()
+                .equals(getString(R.string.date_of_birth), ignoreCase = true)
+        )
+            isValid = false
+        if (tvCountry.text.isNullOrEmpty()
+            || tvCountry.text.toString()
+                .equals(getString(R.string.select_country), ignoreCase = true)
+        )
+            isValid = false
+        if (etState.text.isNullOrEmpty())
+            isValid = false
+        if (etCity.text.isNullOrEmpty())
+            isValid = false
+        if (encodedString.isBlank())
+            isValid = false
+
+        return isValid
+    }
+
+    private fun showPersonListDialog(it: View) {
+        personPopupWindow?.dismiss()
+        if (personPopupWindow == null)
+            provideUserPopupWindow(it)
+        personPopupWindow!!.showAsDropDown(it, 0, -it.height)
+    }
+
+    private fun showCountryDialog(it: View) {
+        countryPopupWindow?.dismiss()
+        if (countryPopupWindow == null)
+            provideCountryPopupWindow(it)
+        countryPopupWindow!!.showAsDropDown(it, 0, -it.height)
     }
 
     private fun checkPermission() {
@@ -138,6 +243,7 @@ class AddPersonActivity : BaseActivity() {
                 }
                 2 -> {
                     ivProfile.setImageResource(R.drawable.logo)
+                    encodedString = ""
                 }
             }
         }
@@ -154,7 +260,7 @@ class AddPersonActivity : BaseActivity() {
                         try {
                             val selectedBitmap =
                                 BitmapFactory.decodeStream(contentResolver.openInputStream(it))
-                            val encodedString = Utility.getEncodeBitmapString(selectedBitmap)
+                            encodedString = Utility.getEncodeBitmapString(selectedBitmap)
                             ivProfile.setImageURI(contentURL)
 
                         } catch (e: Exception) {
@@ -165,7 +271,7 @@ class AddPersonActivity : BaseActivity() {
                 takeImageCode -> {
                     try {
                         val bitmap = data.extras?.get("data") as Bitmap
-                        val encodedString = Utility.getEncodeBitmapString(bitmap)
+                        encodedString = Utility.getEncodeBitmapString(bitmap)
 
                         val decodedString: ByteArray = Base64.decode(encodedString, Base64.DEFAULT)
 
@@ -200,7 +306,7 @@ class AddPersonActivity : BaseActivity() {
     }
 
     private fun provideCountryPopupWindow(it: View) {
-        popupWindow = PopupWindow(it.width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        countryPopupWindow = PopupWindow(it.width, ViewGroup.LayoutParams.WRAP_CONTENT)
             .apply {
 
                 isOutsideTouchable = true
@@ -210,10 +316,39 @@ class AddPersonActivity : BaseActivity() {
                     false
                 ) as RecyclerView
                 val adapter = CountryDropDownAdapter()
+                val alData = CountryRepository.all
+                alData.sortWith(Comparator { t, t2 ->
+                    t.countryName.compareTo(t2.countryName)
+                })
+                adapter.addData(alData)
                 rvListView.layoutManager = LinearLayoutManager(this@AddPersonActivity)
                 rvListView.adapter = adapter
                 adapter.onItemClick = {
-                    popupWindow?.dismiss()
+                    tvCountry.text = it.countryName
+                    countryPopupWindow?.dismiss()
+                }
+                contentView = rvListView
+            }
+    }
+
+    private fun provideUserPopupWindow(it: View) {
+        personPopupWindow = PopupWindow(it.width, ViewGroup.LayoutParams.WRAP_CONTENT)
+            .apply {
+
+                isOutsideTouchable = true
+                val rvListView = layoutInflater.inflate(
+                    R.layout.lay_dropdown,
+                    null,
+                    false
+                ) as RecyclerView
+                personAdapter = PersonDropDownAdapter()
+                rvListView.layoutManager = LinearLayoutManager(this@AddPersonActivity)
+                rvListView.adapter = personAdapter
+
+                personAdapter.addData(alPersonName)
+                personAdapter.onItemClick = {
+                    tvCountry.text = it.firstName
+                    personPopupWindow?.dismiss()
                 }
                 contentView = rvListView
             }

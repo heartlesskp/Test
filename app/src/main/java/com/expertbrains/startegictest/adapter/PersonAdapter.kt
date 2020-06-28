@@ -6,24 +6,26 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.expertbrains.startegictest.R
 import com.expertbrains.startegictest.database.testtable.TestTable
+import com.expertbrains.startegictest.widgets.Utility
 import kotlinx.android.synthetic.main.lay_person_list.view.*
 
 class PersonAdapter : RecyclerView.Adapter<PersonAdapter.VHolder>() {
 
     private var alData = ArrayList<TestTable>()
-    var onItemClick: ((isDelete: Boolean) -> Unit)? = null
+    var onItemClick: ((item: TestTable, isDelete: Boolean) -> Unit)? = null
 
     inner class VHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindView() {
-//            val item = alData[adapterPosition]
-//            itemView.tvFirstName.text = item.firstName
-//            itemView.tvLastName.text = item.lastName
-//            itemView.tvDesignation.text = item.designation
+            val item = alData[adapterPosition]
+            itemView.tvFirstName.text = item.firstName
+            itemView.tvLastName.text = item.lastName
+            itemView.tvDesignation.text = item.designation
+            itemView.ivPersonPic.setImageBitmap(Utility.getDecodeStringBitmap(item.profileUrl))
             itemView.setOnClickListener {
-                onItemClick?.invoke(false)
+                onItemClick?.invoke(item, false)
             }
             itemView.ivDelete.setOnClickListener {
-                onItemClick?.invoke(true)
+                onItemClick?.invoke(item, true)
             }
         }
     }
@@ -35,7 +37,7 @@ class PersonAdapter : RecyclerView.Adapter<PersonAdapter.VHolder>() {
         )
     }
 
-    override fun getItemCount(): Int = 10
+    override fun getItemCount(): Int = alData.size
 
     override fun onBindViewHolder(holder: VHolder, position: Int) {
         holder.bindView()
@@ -43,5 +45,6 @@ class PersonAdapter : RecyclerView.Adapter<PersonAdapter.VHolder>() {
 
     fun addData(alData: ArrayList<TestTable>) {
         this.alData = alData
+        notifyDataSetChanged()
     }
 }

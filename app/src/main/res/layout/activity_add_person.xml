@@ -44,6 +44,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvPersonList" />
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivEditPic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintBottom_toBottomOf="@id/ivProfile"
+            app:layout_constraintEnd_toEndOf="@id/ivProfile" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilFirstName"
             android:layout_width="0dp"
@@ -138,7 +146,6 @@
             android:drawablePadding="4dp"
             android:padding="10dp"
             android:text="@string/date_of_birth"
-            android:textColor="@color/colorGrey"
             android:theme="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@id/tilFirstName"
             app:layout_constraintStart_toStartOf="@id/ivProfile"
@@ -150,14 +157,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:drawableEnd="@drawable/ic_right_arrow"
-            android:hint="@string/select_country"
             android:padding="10dp"
-            android:textColor="@color/colorGrey"
+            android:text="@string/select_country"
             android:theme="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@id/tilFirstName"
             app:layout_constraintStart_toStartOf="@id/ivProfile"
-            app:layout_constraintTop_toBottomOf="@id/tvDateOfBirth"
-            tools:text="Country" />
+            app:layout_constraintTop_toBottomOf="@id/tvDateOfBirth" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/verticalGuideline"
